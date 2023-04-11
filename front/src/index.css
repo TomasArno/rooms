@@ -1,0 +1,20 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.root {
+  width: 100%;
+  height: 100vh;
+}
+
+/* .id-container {
+  width: 300px;
+  margin: 0 auto;
+}
+
+.connect-btn {
+  width: 90px;
+  height: 90px;
+} */
