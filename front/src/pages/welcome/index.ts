@@ -1,47 +1,40 @@
-function addStyles(container: HTMLElement) {
-  const style = document.createElement("style");
-  style.innerHTML = `
-    .container {
-      background-color: gray;
-      width: 100%;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    
-    .welcome-container {
-      width: 350px;
-      height: 220px;
-      display: flex;
-      flex-direction: column;
-      row-gap: 100px;
+console.log("af");
+
+customElements.define(
+  "init-welcome",
+  class InitWelcome extends HTMLElement {
+    shadow = this.attachShadow({ mode: "open" });
+    constructor() {
+      super();
     }
 
-    .welcome-container__title {
-      text-align: center;
-      font-size: 40px;
+    conectedCallback() {
+      this.render();
     }
 
-    `;
-  container.appendChild(style);
-}
+    render() {
+      console.log("aas");
+      this.shadow.innerHTML = `
+        <header class="header"></header>
+        <form class="form">
+            <label class ="label-email">
+                <p class="p">Email</p>
+                <input class="input" type="text" name="label-email">
+            </label>
+            <label class ="label-name">
+                <p class="p">Tu nombre</p>
+                <input class="input" type="text" name="label-name">
+            </label>
+            <label class ="label">
+                <p class="p">Email</p>
+            </label>
+            <label class ="label">
+                <p class="p">Email</p>
+            </label>
 
-export function initWelcome() {
-  const containerEl = document.createElement("div");
-  containerEl.className = "container";
-
-  containerEl.innerHTML = `
-
-    <div class="welcome-container">
-      <h1 class="welcome-container__title">¡Bienvenidos!</h1>
-      <div class="send-container">
-        <send-comp id="welcome"></send-comp>
-      </div>
-    </div>
-    `;
-
-  addStyles(containerEl);
-
-  return containerEl;
-}
+            <text-box type="incoming" time="20:02">test</text-box>
+        </form>
+        `;
+    }
+  }
+);

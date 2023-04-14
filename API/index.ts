@@ -1,6 +1,6 @@
 import * as express from "express";
-import { fsDb, roomId, rtDb } from "./db";
-import { nanoid } from "nanoid-esm";
+import { fsDb, rtDb } from "./db";
+import { uuid } from "uuid";
 import * as cors from "cors";
 
 const app = express();
@@ -60,9 +60,7 @@ app.post("/rooms", (req, res) => {
     .get()
     .then((doc) => {
       if (doc.exists) {
-        const roomRef = rtDb.ref(
-          `rooms/${Math.floor(Math.random() * 1000) + "ksadlksdl"}`
-        );
+        const roomRef = rtDb.ref(`rooms/${uuid()}`);
         roomRef
           .set({
             messages: [],

@@ -1,7 +1,3 @@
-import { goTo } from "./router";
-import "./components/send-msg";
-import "./components/message";
-
-window.addEventListener("load", () => {
-  goTo("/welcome");
-});
+import "./components/text-box";
+import "./pages/welcome";
+import "./router";

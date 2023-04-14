@@ -9,6 +9,4 @@ admin.initializeApp({
 const rtDb = admin.database();
 const fsDb = admin.firestore();
 
-const roomId = "372125b4-bf80-4c9c-a79b-2e6debf81291";
-
-export { fsDb, rtDb, roomId };
+export { fsDb, rtDb };
