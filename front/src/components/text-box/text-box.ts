@@ -1,33 +1,26 @@
-class TextBox extends HTMLElement {
-  shadow = this.attachShadow({ mode: "open" });
+customElements.define(
+  "text-box",
+  class TextBox extends HTMLElement {
+    shadow = this.attachShadow({ mode: "open" });
 
-  constructor() {
-    super();
-  }
+    constructor() {
+      super();
+    }
 
-  connectedCallback() {
-    this.render();
-  }
+    connectedCallback() {
+      this.render();
+    }
 
-  render() {
-    const style = document.createElement("style");
-    const type = this.getAttribute("type") as "incoming" | "sent";
-    const content = this.innerHTML as String;
-    const time = this.getAttribute("time") as String;
+    addStyles() {
+      const style = document.createElement("style");
 
-    style.innerHTML = `
+      style.innerHTML = `
                 .container {
                     display: flex;
                     flex-direction: column;
                     width: 100%;
                     margin: 6px 0;
                 }
-
-                    .time {
-                        display: inline;
-                        font-size: 0.81em;
-                        margin: 0 0 0 9px;
-                    }
 
                 .incoming {
                     display: inline;
@@ -49,15 +42,19 @@ class TextBox extends HTMLElement {
                     text-align: right;
                 }
             `;
+      this.shadow.appendChild(style);
+    }
 
-    this.shadow.innerHTML = `
+    render() {
+      const type = this.getAttribute("type") as "incoming" | "sent";
+      const content = this.innerHTML as String;
+
+      this.shadow.innerHTML = `
                 <div class="container">
-                    <div class=${type}>${content}<div class="time">| ${time}</div></div> 
+                    <div class=${type}>${content}</div> 
                 </div>            
             `;
-
-    this.shadow.appendChild(style);
+      this.addStyles();
+    }
   }
-}
-
-customElements.define("text-box", TextBox);
+);

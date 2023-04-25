@@ -30,7 +30,7 @@ app.post("/signup", (req, res) => {
             nombre,
           })
           .then((userRef) => {
-            res.json({ id: userRef.id, new: true }); // Creo
+            res.json({ id: userRef.id, new: true });
           });
       } else {
         res.status(400).send("User already exists");

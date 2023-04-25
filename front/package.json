@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@types/node": "^18.15.11",
-    "@vaadin/router": "vaadin/router",
+    "@vaadin/router": "^1.7.5",
     "firebase": "^9.19.1",
     "parcel": "^2.8.3"
   }
