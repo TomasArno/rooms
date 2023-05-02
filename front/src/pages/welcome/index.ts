@@ -58,12 +58,12 @@ customElements.define(
         <form class="form">
             <label class ="label-email label">
               <p class="p">Email</p>
-              <input class="input" type="text" name="label-email">
+              <input class="input email" type="text" name="label-email">
             </label>
 
             <label class ="label-name label">
               <p class="p">Tu nombre</p>
-              <input class="input" type="text" name="label-name">
+              <input class="input name" type="text" name="label-name">
             </label>
                 
             <label class ="label-options label">
@@ -76,17 +76,25 @@ customElements.define(
                 
             <label class ="label-room label">
               <p class="p">Room id</p>
-                <input class="input" type="text" name="label-name">
+                <input class="input room-id" type="text" name="label-name">
             </label>
 
             <send-button class="form-btn" type="home" time="20:02"></send-button>
         </form>
         `;
-      const selectRoomEl = this.shadow.querySelector(".select") as HTMLElement;
-      const formBtnEl = this.shadow.querySelector(".form-btn") as HTMLElement;
+      const emailEl = this.shadow.querySelector(".email") as HTMLFormElement;
+      const nameEl = this.shadow.querySelector(".name") as HTMLFormElement;
+      const selectRoomEl = this.shadow.querySelector(
+        ".select"
+      ) as HTMLFormElement;
       const labelRoomEl = this.shadow.querySelector(
         ".label-room"
-      ) as HTMLElement;
+      ) as HTMLFormElement;
+      const roomId = this.shadow.querySelector(".room-id") as HTMLFormElement;
+      const formBtnEl = this.shadow.querySelector(
+        ".form-btn"
+      ) as HTMLFormElement;
+
       selectRoomEl.addEventListener("change", (e) => {
         const target = e.target as HTMLFormElement;
         const choosedOption = target.value;
@@ -96,7 +104,14 @@ customElements.define(
           : (labelRoomEl.style.display = "none");
       });
 
-      formBtnEl.addEventListener("click", () => {});
+      formBtnEl.addEventListener("click", () => {
+        state.main({
+          email: emailEl.value,
+          name: nameEl.value,
+          action: selectRoomEl.value,
+          roomId: roomId.value || false,
+        });
+      });
 
       this.addStyles();
     }

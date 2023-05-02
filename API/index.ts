@@ -18,7 +18,7 @@ const roomsColl = fsDb.collection("rooms");
 
 app.post("/signup", (req, res) => {
   const { email } = req.body;
-  const { nombre } = req.body;
+  const { name } = req.body;
   usersColl
     .where("email", "==", email)
     .get()
@@ -27,7 +27,7 @@ app.post("/signup", (req, res) => {
         usersColl
           .add({
             email,
-            nombre,
+            name,
           })
           .then((userRef) => {
             res.json({ id: userRef.id, new: true });
