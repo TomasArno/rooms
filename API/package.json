@@ -15,5 +15,8 @@
     "nanoid-esm": "^2.1.0-esm.4",
     "nodemon": "^2.0.22",
     "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/uuid": "^9.0.1"
   }
 }

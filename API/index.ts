@@ -1,6 +1,6 @@
 import * as express from "express";
 import { fsDb, rtDb } from "./db";
-import { uuid } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import * as cors from "cors";
 
 const app = express();
@@ -19,6 +19,7 @@ const roomsColl = fsDb.collection("rooms");
 app.post("/signup", (req, res) => {
   const { email } = req.body;
   const { name } = req.body;
+
   usersColl
     .where("email", "==", email)
     .get()
@@ -33,7 +34,7 @@ app.post("/signup", (req, res) => {
             res.json({ id: userRef.id, new: true });
           });
       } else {
-        res.status(400).send("User already exists");
+        res.status(400).json({ res: "User already exists" });
       }
     });
 });
@@ -46,7 +47,7 @@ app.post("/auth", (req, res) => {
     .get()
     .then((searchedEmail) => {
       if (searchedEmail.empty) {
-        res.status(400).send("Email not found");
+        res.status(400).json({ res: "Email not found" });
       } else {
         res.json({ id: searchedEmail.docs[0].id });
       }
@@ -60,26 +61,26 @@ app.post("/rooms", (req, res) => {
     .get()
     .then((doc) => {
       if (doc.exists) {
-        const roomRef = rtDb.ref(`rooms/${uuid()}`);
+        const roomRef = rtDb.ref(`rooms/${uuidv4().replaceAll("-", "")}`);
         roomRef
           .set({
-            messages: [],
+            messages: [0],
             owner: userId,
           })
           .then(() => {
             const roomLongId = roomRef.key;
-            const roomId = 1000 + Math.floor(Math.random() * 999).toString();
+            const roomId = (1000 + Math.floor(Math.random() * 999)).toString();
             roomsColl
               .doc(roomId)
               .set({
-                rtdbRoomId: roomLongId,
+                rtDbRoomId: roomLongId,
               })
               .then(() => {
-                res.json({ id: roomId });
+                res.json({ roomId });
               });
           });
       } else {
-        res.status(401).send("no existis");
+        res.status(401).json({ res: "no existis" });
       }
     });
 });
@@ -87,7 +88,6 @@ app.post("/rooms", (req, res) => {
 app.get("/rooms/:roomId", (req, res) => {
   const { userId } = req.query;
   const { roomId } = req.params;
-  console.log(userId, typeof userId); // revisar
 
   usersColl
     .doc(userId.toString())
@@ -98,11 +98,38 @@ app.get("/rooms/:roomId", (req, res) => {
           .doc(roomId)
           .get()
           .then((snap) => {
-            const data = snap.data();
-            res.json(data);
+            if (snap.exists) {
+              const data = snap.data();
+              res.json(data);
+            } else {
+              res.status(401).send("El Room solicitado NO existe");
+            }
           });
       } else {
-        res.status(401).send("no existis");
+        res.status(401).send("El usuario NO existe, por favor registrese");
       }
     });
+});
+
+app.post("/messages", (req, res) => {
+  const { roomId } = req.query;
+  const { userName } = req.body;
+  const { msg } = req.body;
+  console.log(roomId, userName, "del messages", msg);
+
+  console.log("Mensaje recibido");
+
+  const messageListRef = rtDb.ref(`rooms/${roomId}/messages`);
+  messageListRef.get().then((snap) => {
+    if (snap.exists) {
+      console.log("existe");
+    } else {
+      console.log("no existe");
+    }
+    console.log(snap.val());
+
+    let messages = snap.val();
+    messages.push(req.body);
+    messageListRef.set(messages, () => res.json("Mensaje enviado"));
+  });
 });
