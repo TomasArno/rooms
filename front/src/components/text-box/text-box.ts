@@ -1,3 +1,6 @@
+import { type } from "os";
+import { state } from "../../state";
+
 customElements.define(
   "text-box",
   class TextBox extends HTMLElement {
@@ -17,43 +20,41 @@ customElements.define(
       style.innerHTML = `
                 .container {
                     display: flex;
-                    flex-direction: column;
-                    width: 100%;
                     margin: 6px 0;
                 }
 
-                .incoming {
-                    display: inline;
+                .message {
+                    color: white;
+                    max-width: 250px;
                     padding: 12px;
-                    background-color: #eaeaeacf;
                     font-size: 18px;
                     border-radius: 3px;
-                    align-self: flex-start;
-                    text-align: left;
-                }
-
-                .sent {
-                    display: inline;
-                    padding: 12px;
-                    background-color: #bae97ccf;
-                    font-size: 18px;
-                    border-radius: 3px;
-                    align-self: flex-end;
-                    text-align: right;
                 }
             `;
       this.shadow.appendChild(style);
     }
 
     render() {
-      const type = this.getAttribute("type") as "incoming" | "sent";
+      const userName = this.getAttribute("sender") as string;
       const content = this.innerHTML as String;
 
       this.shadow.innerHTML = `
-                <div class="container">
-                    <div class=${type}>${content}</div> 
-                </div>            
-            `;
+      <div class="container">
+        <div class=message>${content}</div> 
+      </div>`;
+
+      const messageCont = this.shadow.querySelector(
+        ".container"
+      ) as HTMLElement;
+      const message = this.shadow.querySelector(".message") as HTMLElement;
+
+      if (userName == state.data.userName) {
+        messageCont.style.justifyContent = "flex-end";
+        message.style.background = "red";
+      } else {
+        messageCont.style.justifyContent = "flex-start";
+        message.style.background = "orange";
+      }
       this.addStyles();
     }
   }

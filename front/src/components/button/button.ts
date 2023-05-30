@@ -1,4 +1,5 @@
 import { Router } from "@vaadin/router";
+import { state } from "../../state";
 
 customElements.define(
   "send-button",
@@ -46,7 +47,7 @@ customElements.define(
         </div>            
               `;
 
-      const buttonEl = this.shadow.querySelector(".button") as HTMLElement;
+      const buttonEl = this.shadow.querySelector(".button") as HTMLFormElement;
       const inputEl = this.shadow.querySelector(".input") as HTMLFormElement;
 
       if (type == "home") {
@@ -57,6 +58,11 @@ customElements.define(
       } else {
         inputEl.style.display = "initial";
         buttonEl.textContent = "Enviar";
+        state.sendMessage({
+          roomId: state.data.roomId,
+          userName: state.data.userName,
+          msg: buttonEl.value,
+        });
       }
       this.addStyles();
     }

@@ -1,3 +1,4 @@
+import { state } from "../../state";
 customElements.define(
   "init-chat",
   class InitChat extends HTMLElement {
@@ -45,7 +46,6 @@ customElements.define(
     }
 
     render() {
-      let arr = [0, 0, 0];
       this.shadow.innerHTML = `
       <div class="gen-container">
         <div class="descrip-container">
@@ -53,27 +53,30 @@ customElements.define(
           <p class ="room-id">Room ID:</p>
         </div>
 
-        <div class="msg-container">
-        
-        ${arr.map(() => `<text-box type="incoming">Hola</text-box>`).join("")}
-        </div>
+        <div class="msg-container"></div>
         <div class="btn-container">
-          <send-button type="chat" time="20:02"></send-button>
+          <send-button type="chat"></send-button>
         </div>
       </div>`;
-      // const selectRoomEl = this.shadow.querySelector(".select") as HTMLElement;
-      // const labelRoomEl = this.shadow.querySelector(
-      //   ".label-room"
-      // ) as HTMLElement;
-      // selectRoomEl.addEventListener("change", (e) => {
-      //   const target = e.target as HTMLFormElement;
-      //   const choosedOption = target.value;
 
-      //   choosedOption == "existing"
-      //     ? (labelRoomEl.style.display = "initial")
-      //     : "";
-      // });
+      const msgContainer = this.shadow.querySelector(
+        ".msg-container"
+      ) as HTMLElement;
 
+      state.subscribe(() => {
+        const messagesList = state.getState().messagesList;
+
+        msgContainer.innerHTML = `
+        ${messagesList
+          .map(
+            (element: any) =>
+              `<text-box sender="${element.userName}">${element.msg}</text-box>`
+          )
+          .join("")}
+        
+        `;
+      });
+      state.connectChatroom();
       this.addStyles();
     }
   }

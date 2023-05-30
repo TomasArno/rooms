@@ -102,11 +102,13 @@ app.get("/rooms/:roomId", (req, res) => {
               const data = snap.data();
               res.json(data);
             } else {
-              res.status(401).send("El Room solicitado NO existe");
+              res.status(401).json({ err: "El Room solicitado NO existe" });
             }
           });
       } else {
-        res.status(401).send("El usuario NO existe, por favor registrese");
+        res
+          .status(401)
+          .json({ err: "El usuario NO existe, por favor registrese" });
       }
     });
 });
@@ -127,9 +129,13 @@ app.post("/messages", (req, res) => {
       console.log("no existe");
     }
     console.log(snap.val());
-
     let messages = snap.val();
-    messages.push(req.body);
-    messageListRef.set(messages, () => res.json("Mensaje enviado"));
+
+    if (messages) {
+      messages.push(req.body);
+      messageListRef.set(messages, () => res.json("Mensaje enviado"));
+    } else {
+      console.log("messages vacío");
+    }
   });
 });

@@ -109,7 +109,7 @@ customElements.define(
           email: emailEl.value,
           name: nameEl.value,
           action: selectRoomEl.value,
-          roomId: roomId.value || false,
+          roomId: roomId.value,
         });
       });
 
