@@ -46,11 +46,12 @@ customElements.define(
     }
 
     render() {
+      console.log("Soy el chat");
       this.shadow.innerHTML = `
       <div class="gen-container">
         <div class="descrip-container">
           <h2 class="title">Chat</h2>
-          <p class ="room-id">Room ID:</p>
+          <p class ="room-id">Room ID: ${state.data.shortRoomId}</p>
         </div>
 
         <div class="msg-container"></div>
@@ -65,18 +66,20 @@ customElements.define(
 
       state.subscribe(() => {
         const messagesList = state.getState().messagesList;
+        console.log("suscribe del chat", messagesList);
 
-        msgContainer.innerHTML = `
-        ${messagesList
-          .map(
-            (element: any) =>
-              `<text-box sender="${element.userName}">${element.msg}</text-box>`
-          )
-          .join("")}
-        
-        `;
+        if (messagesList) {
+          //ver porque no funciona
+          msgContainer.innerHTML = `
+          ${messagesList
+            .map(
+              (element: any) =>
+                `<text-box sender="${element.userName}">${element.msg}</text-box>`
+            )
+            .join("")}`;
+        }
       });
-      state.connectChatroom();
+
       this.addStyles();
     }
   }

@@ -1,16 +1,22 @@
 import { API_BASE_URL, rtDb } from "./db";
 type message = { roomId: string; userName: string; msg: any };
-type newState = { userName: string; roomId: string; messagesList: any };
+type newState = {
+  userName: string;
+  longRoomId: string;
+  shortRoomId: string;
+  messagesList: any;
+};
 type formData = {
   email: string;
   name: string;
   action: string;
-  roomId: string;
+  shortRoomId: string;
 };
 export const state = {
   data: {
     userName: "",
-    roomId: "",
+    longRoomId: "",
+    shortRoomId: "",
     messagesList: [],
   },
   listeners: [],
@@ -25,21 +31,31 @@ export const state = {
     }
   },
   subscribe(callback: (any: any) => any) {
+    console.log("soy el suscribe");
+
     this.listeners.push(callback);
   },
   connectChatroom() {
-    const chatRoomsRef = rtDb.ref(`/rooms/${this.data.roomId}/messages`);
+    console.log("me conecto al chatroom");
+
+    const chatRoomsRef = rtDb.ref(`/rooms/${this.data.longRoomId}/messages`);
     const lastState = this.getState();
-    console.log(`El room es ${this.data.roomId}`);
 
     chatRoomsRef.on("value", (snapshot) => {
-      const messages = snapshot.val(); // extraigo la data del snapshot
+      console.log("CAMBIOS");
+      const messages = snapshot.val() as [];
 
-      lastState.messagesList = messages;
+      console.log(messages);
+
+      lastState.messagesList = messages.slice(1, messages.length);
+      console.log(lastState.messagesList);
+
       this.setState(lastState);
     });
   },
   async main(formData: formData) {
+    console.log("recibí data: ", formData);
+
     const authState = await this.auth(formData);
     let userId;
 
@@ -57,36 +73,39 @@ export const state = {
 
     const lastState = this.getState();
     lastState.userName = formData.name;
+
     if (formData.action == "new") {
       const roomData = await this.createRoom(userId);
-      const roomDataParsed = await roomData.json();
-      lastState.roomId = roomDataParsed.roomId;
-      this.setState(lastState);
+      const { roomId } = await roomData.json();
 
-      console.log(`Tu roomId es: ${roomDataParsed.roomId}`);
+      const rtDbRoomData = await this.joinRoom(roomId, userId);
+      const { rtDbRoomId } = await rtDbRoomData.json();
 
-      const rtDbRoomData = await this.joinRoom(lastState.roomId, userId);
+      lastState.shortRoomId = roomId;
+      lastState.longRoomId = rtDbRoomId;
+      lastState.longRoomId = rtDbRoomId;
+      console.log(`Tu roomId corto es: ${roomId}`);
+      console.log(`Tu roomId largo es: ${rtDbRoomId}`);
+    } else if (formData.shortRoomId) {
+      const rtDbRoomData = await this.joinRoom(formData.shortRoomId, userId);
       const { rtDbRoomId } = await rtDbRoomData.json();
-      this.sendMessage({
-        roomId: rtDbRoomId,
-        userName: this.data.userName,
-        msg: "Este es el primer mensaje enviado cuando cree un room",
-      });
-    } else if (formData.roomId) {
-      const rtDbRoomData = await this.joinRoom(formData.roomId, userId);
-      const { rtDbRoomId } = await rtDbRoomData.json();
-      lastState.roomId = rtDbRoomId;
-      this.setState(lastState);
+
+      lastState.shortRoomId = formData.shortRoomId;
+      lastState.longRoomId = rtDbRoomId;
       console.log(`Tu roomId es: ${rtDbRoomId}`);
     } else {
       console.log("Indique algún roomId");
     }
+
+    this.setState(lastState);
+    state.connectChatroom();
+    console.log("Termine");
   },
   async sendMessage(message: message) {
     const { roomId } = message;
     const { userName } = message;
     const { msg } = message;
-    console.log(msg);
+    console.log(message, "mensaje");
 
     const sentMessage = await fetch(
       API_BASE_URL + `/messages?roomId=${roomId}`,

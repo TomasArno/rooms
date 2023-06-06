@@ -1,4 +1,3 @@
-import { Router } from "@vaadin/router";
 import { state } from "../../state";
 
 customElements.define(
@@ -38,30 +37,29 @@ customElements.define(
     }
 
     render() {
-      const type = this.getAttribute("type");
-
       this.shadow.innerHTML = `
         <div class="container">
             <input type="text" class="input"/>
             <button class="button"></button>
-        </div>            
-              `;
+        </div>`;
 
+      const type = this.getAttribute("type");
       const buttonEl = this.shadow.querySelector(".button") as HTMLFormElement;
       const inputEl = this.shadow.querySelector(".input") as HTMLFormElement;
+      console.log("El type del button es: " + type);
 
       if (type == "home") {
         buttonEl.textContent = "Comenzar";
-        buttonEl.addEventListener("click", () => {
-          Router.go("/chat");
-        });
       } else {
         inputEl.style.display = "initial";
         buttonEl.textContent = "Enviar";
-        state.sendMessage({
-          roomId: state.data.roomId,
-          userName: state.data.userName,
-          msg: buttonEl.value,
+        buttonEl.addEventListener("click", (e: any) => {
+          state.sendMessage({
+            roomId: state.data.longRoomId,
+            userName: state.data.userName,
+            msg: inputEl.value,
+          });
+          inputEl.value = "";
         });
       }
       this.addStyles();

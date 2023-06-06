@@ -1,4 +1,5 @@
 import { state } from "../../state";
+import { Router } from "@vaadin/router";
 
 customElements.define(
   "init-welcome",
@@ -52,6 +53,7 @@ customElements.define(
     }
 
     render() {
+      console.log("Soy el welcome");
       this.shadow.innerHTML = `
         <header class="header"></header>
 
@@ -79,7 +81,7 @@ customElements.define(
                 <input class="input room-id" type="text" name="label-name">
             </label>
 
-            <send-button class="form-btn" type="home" time="20:02"></send-button>
+            <send-button class="form-btn" type="home"></send-button>
         </form>
         `;
       const emailEl = this.shadow.querySelector(".email") as HTMLFormElement;
@@ -105,12 +107,17 @@ customElements.define(
       });
 
       formBtnEl.addEventListener("click", () => {
-        state.main({
-          email: emailEl.value,
-          name: nameEl.value,
-          action: selectRoomEl.value,
-          roomId: roomId.value,
-        });
+        console.log("Listener en welcome del boton");
+        state
+          .main({
+            email: emailEl.value.toLowerCase(),
+            name: nameEl.value.toLowerCase(),
+            action: selectRoomEl.value,
+            shortRoomId: roomId.value,
+          })
+          .then(() => {
+            Router.go("/chat");
+          });
       });
 
       this.addStyles();

@@ -117,21 +117,19 @@ app.post("/messages", (req, res) => {
   const { roomId } = req.query;
   const { userName } = req.body;
   const { msg } = req.body;
+  console.log("Mensaje recibido");
   console.log(roomId, userName, "del messages", msg);
 
-  console.log("Mensaje recibido");
-
-  const messageListRef = rtDb.ref(`rooms/${roomId}/messages`);
+  const messageListRef = rtDb.ref(`rooms/${roomId}/messages`); // Tiene que ir el roomId de la realtimeñ
   messageListRef.get().then((snap) => {
     if (snap.exists) {
-      console.log("existe");
-    } else {
-      console.log("no existe");
-    }
-    console.log(snap.val());
-    let messages = snap.val();
+      let messages = snap.val();
+      if (!messages) {
+        console.log("estoy vacio", messages);
+        messages = [];
+      }
+      console.log(messages);
 
-    if (messages) {
       messages.push(req.body);
       messageListRef.set(messages, () => res.json("Mensaje enviado"));
     } else {
